@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:18.6
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U flower -d flower_delivery']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    container_name: flower-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: flower_delivery
+      POSTGRES_USER: flower
+      POSTGRES_PASSWORD: flower1234
+
+    ports:
+      - "127.0.0.1:15432:5432"
+
+    volumes:
+      - flower_postgres_data:/var/lib/postgresql
+
+  redis:
+    image: redis:8.10
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    container_name: flower-redis
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:16379:6379"
+
+    volumes:
+      - flower_redis_data:/data
+
+volumes:
+  flower_postgres_data:
+  flower_redis_data:
+
+
